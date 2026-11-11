@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz : Ma jolie maison</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e6f5ff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .quiz {
+            background: white;
+            max-width: 550px;
+            margin: 30px auto;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px #aaa;
+        }
+
+        h1 {
+            color: #ff8c42;
+        }
+
+        .question {
+            font-size: 24px;
+            color: #333;
+            margin: 25px 0;
+        }
+
+        .answers button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 15px;
+            background: #bde0fe;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .answers button:hover {
+            background: #90caf9;
+        }
+
+        .correct {
+            background: #90ee90 !important;
+        }
+
+        .wrong {
+            background: #ff9999 !important;
+        }
+
+        #feedback {
+            font-size: 23px;
+            font-weight: bold;
+            margin: 20px;
+        }
+
+        #next {
+            background: #ffb703;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        #score {
+            font-size: 25px;
+            color: #219653;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz">
+
+    <h1>🏠 Ma jolie maison 🏠</h1>
+    <p>Bienvenue dans le quiz des petits champions !</p>
+
+    <h2 id="progress"></h2>
+
+    <div id="question" class="question"></div>
+
+    <div id="answers" class="answers"></div>
+
+    <div id="feedback"></div>
+
+    <button id="next" onclick="nextQuestion()">
+        Question suivante ➡️
+    </button>
+
+    <div id="score"></div>
+
+</div>
+
+<script>
+
+const questions = [
+    {
+        question: "🛏️ Où est-ce qu'on dort ?",
+        answers: ["Dans la cuisine", "Dans la chambre", "Dans le jardin"],
+        correct: 1
+    },
+    {
+        question: "🍳 Où est-ce qu'on prépare le repas ?",
+        answers: ["Dans la cuisine", "Dans la salle de bain", "Dans le garage"],
+        correct: 0
+    },
+    {
+        question: "🚿 Où est-ce qu'on prend une douche ?",
+        answers: ["Dans le salon", "Dans la chambre", "Dans la salle de bain"],
+        correct: 2
+    },
+    {
+        question: "🛋️ Où est-ce qu'on regarde la télévision ?",
+        answers: ["Dans le salon", "Dans le jardin", "Dans le garage"],
+        correct: 0
+    },
+    {
+        question: "🚪 Quel objet permet d'entrer dans la maison ?",
+        answers: ["Une fenêtre", "Une porte", "Une chaise"],
+        correct: 1
+    },
+    {
+        question: "🪟 Par quoi peut-on regarder dehors ?",
+        answers: ["Une fenêtre", "Un lit", "Une table"],
+        correct: 0
+    },
+    {
+        question: "🧊 Où conserve-t-on les aliments au frais ?",
+        answers: ["Dans le réfrigérateur", "Dans le lit", "Dans l'armoire"],
+        correct: 0
+    },
+    {
+        question: "🪥 Où se lave-t-on les dents ?",
+        answers: ["Dans le garage", "Dans la salle de bain", "Dans le jardin"],
+        correct: 1
+    },
+    {
+        question: "🪑 Sur quoi peut-on s'asseoir ?",
+        answers: ["Une chaise", "Une porte", "Une fenêtre"],
+        correct: 0
+    },
+    {
+        question: "💡 Qu'est-ce qui éclaire une pièce ?",
+        answers: ["Un coussin", "Une lampe", "Un tapis"],
+        correct: 1
+    }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+function showQuestion() {
+
+    answered = false;
+
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("next").style.display = "none";
+    document.getElementById("score").textContent = "";
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("progress").textContent =
+        "Question " + (currentQuestion + 1) +
+        " / " + questions.length;
+
+    document.getElementById("question").textContent = q.question;
+
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
+
+    q.answers.forEach((answer, index) => {
+
+        const button = document.createElement("button");
+
+        button.textContent = answer;
+
+        button.onclick = function() {
+            checkAnswer(index, button);
+        };
+
+        answersDiv.appendChild(button);
+
+    });
+}
+
+function checkAnswer(index, button) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const q = questions[currentQuestion];
+
+    const buttons = document.querySelectorAll(".answers button");
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    if (index === q.correct) {
+
+        button.classList.add("correct");
+
+        document.getElementById("feedback").textContent =
+            "🎉 Bravo ! Bonne réponse !";
+
+        document.getElementById("feedback").style.color = "green";
+
+        score++;
+
+    } else {
+
+        button.classList.add("wrong");
+
+        buttons[q.correct].classList.add("correct");
+
+        document.getElementById("feedback").textContent =
+            "❌ Essaie encore la prochaine fois !";
+
+        document.getElementById("feedback").style.color = "red";
+
+    }
+
+    document.getElementById("next").style.display = "inline-block";
+}
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+
+        showQuestion();
+
+    } else {
+
+        document.getElementById("question").textContent =
+            "🏆 Quiz terminé !";
+
+        document.getElementById("answers").innerHTML = "";
+
+        document.getElementById("progress").textContent = "";
+
+        document.getElementById("feedback").textContent =
+            "Félicitations ! 🎊";
+
+        document.getElementById("next").style.display = "none";
+
+        document.getElementById("score").textContent =
+            "Ton score : " + score + " / " + questions.length;
+
+    }
+}
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
